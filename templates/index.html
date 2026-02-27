@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recherche d'hébergement et de localisation</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
+        input, button { padding: 8px; margin: 5px 0; }
+        .ip-block { margin-top: 20px; padding: 10px; border: 1px solid #ccc; border-radius: 5px; background-color: #f9f9f9; }
+        .error { color: red; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; }
+        .tabs { display: flex; margin-bottom: 10px; }
+        .tab { padding: 8px 16px; cursor: pointer; background: #eee; border: 1px solid #ccc; margin-right: 5px; }
+        .tab.active { background: #ddd; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        #results-section { display: none; }
+    </style>
+</head>
+<body>
+<h1>Recherche d'hébergement et de localisation</h1>
+<form method="POST">
+    <input type="text" name="domain" placeholder="Exemple : mistral.ai" value="{{.DomainQuery}}" required>
+    <button type="submit">Rechercher</button>
+</form>
+
+{{if or .IpApiIs .IpApiCom}}
+<div id="results-section" style="display: block;">
+    <h2>Résultats pour {{.DomainQuery}}</h2>
+    <div class="tabs">
+        <div class="tab active" onclick="openTab(event, 'ipapi-is')">ipapi.is</div>
+        <div class="tab" onclick="openTab(event, 'ip-api-com')">ip-api.com</div>
+    </div>
+
+    <div id="ipapi-is" class="tab-content active">
+        {{if .IpApiIs}}
+        {{range .IpApiIs}}
+        <div class="ip-block">
+            <h3>IP : {{.IP}}</h3>
+            {{if .Error}}
+            <p class="error">Erreur : {{.Error}}</p>
+            {{else}}
+            <table>
+                <tr><th>Champ</th><th>Valeur</th></tr>
+                <tr><td>Pays</td><td>{{if .Country}}{{.Country}}{{else}}Non disponible{{end}}</td></tr>
+                <tr><td>Ville</td><td>{{if .City}}{{.City}}{{else}}Non disponible{{end}}</td></tr>
+                <tr><td>Région</td><td>{{if .Region}}{{.Region}}{{else}}Non disponible{{end}}</td></tr>
+                <tr><td>ASN</td><td>{{if .ASN}}{{.ASN}}{{else}}Non disponible{{end}}</td></tr>
+                <tr><td>Organisation</td><td>{{if .Org}}{{.Org}}{{else}}Non disponible{{end}}</td></tr>
+                <tr><td>Fournisseur</td><td>{{if .ASNOrg}}{{.ASNOrg}}{{else}}Non disponible{{end}}</td></tr>
+            </table>
+            {{end}}
+        </div>
+        {{end}}
+        {{else}}
+        <p>Aucun résultat pour ipapi.is.</p>
+        {{end}}
+    </div>
+
+    <div id="ip-api-com" class="tab-content">
+        {{if .IpApiCom}}
+        {{range .IpApiCom}}
+        <div class="ip-block">
+            <h3>IP : {{.IP}}</h3>
+            {{if .Error}}
+            <p class="error">Erreur : {{.Error}}</p>
+            {{else}}
+            <table>
+                <tr><th>Champ</th><th>Valeur</th></tr>
+                <tr><td>Pays</td><td>{{if .Country}}{{.Country}}{{else}}Non disponible{{end}}</td></tr>
+                <tr><td>Ville</td><td>{{if .City}}{{.City}}{{else}}Non disponible{{end}}</td></tr>
+                <tr><td>Région</td><td>{{if .Region}}{{.Region}}{{else}}Non disponible{{end}}</td></tr>
+                <tr><td>ASN</td><td>{{if .ASN}}{{.ASN}}{{else}}Non disponible{{end}}</td></tr>
+                <tr><td>Organisation</td><td>{{if .Org}}{{.Org}}{{else}}Non disponible{{end}}</td></tr>
+            </table>
+            {{end}}
+        </div>
+        {{end}}
+        {{else}}
+        <p>Aucun résultat pour ip-api.com.</p>
+        {{end}}
+    </div>
+</div>
+{{end}}
+
+<script>
+    function openTab(evt, tabName) {
+        const tabContents = document.querySelectorAll('.tab-content');
+        tabContents.forEach(content => content.classList.remove('active'));
+        const tabs = document.querySelectorAll('.tab');
+        tabs.forEach(tab => tab.classList.remove('active'));
+        document.getElementById(tabName).classList.add('active');
+        evt.currentTarget.classList.add('active');
+    }
+</script>
+</body>
+</html>
